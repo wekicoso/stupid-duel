@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Stupid Duel Game</title>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div class="title">
+            <h1>- Stupid Duel -</h1>
+        </div>
+        <div class="main">
+            <div class="character">
+                <p>Player</p>
+                <img src="img/player.jpg" alt="player">
+                <div class="healthbarcontainer">
+                    <div id="playerHealtBar" class="healthbar"></div>
+                </div>
+                <div>HP: <span id="playerHP">30 / 30</span></div>
+            </div>
+            <div class="vs">vs</div>
+            <div class="character">
+                <p>Stupid</p>
+                <img src="img/computer.jpg" alt="enemy">
+                <div class="healthbarcontainer">
+                    <div id="enemyHealthBar" class="healthbar"></div>
+                </div>
+                <div>HP: <span id="computerHP">30 / 30</span></div>
+            </div>
+        </div>
+        <button id="attackButton">HIT</button>
+        
+        <div class="log">
+            <p>COMBAT LOG:</p>
+        </div>
+        <footer>
+            <button>Start new game</button>
+        </footer>
+    </div>
+</body>
+
+</html>

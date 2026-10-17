@@ -1,0 +1,90 @@
+@import "./reset.css";
+
+html {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1rem;
+    background-color: black;
+    color: white;
+}
+
+body {
+    padding: 10px 50px;
+    height: 100vh;
+    display: flex;
+    justify-self: center;
+    border: 1px solid white;
+}
+
+h1 {
+    font-size: 2.8rem;
+    margin-bottom: 20px;
+}
+
+#wrapper {
+    flex: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+.main {
+    display: flex;
+    align-items: flex-start;
+}
+
+.character {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.vs {
+    border: 1px solid black;
+    padding: 15px 40px;
+    border-radius: 18%;
+    font-size: 2rem;
+    align-self: center;
+}
+
+img {
+    border-radius: 40%;
+    width: 300px;
+    min-width: 150px;
+}
+
+.healthbarcontainer {
+    display: flex;
+    justify-content: stretch;
+    align-content: stretch;
+    margin-top: 20px;
+    width: 100%;
+    height: 30px;
+}
+
+.healthbar {
+    width: 100%;
+    background-color: white;
+    color: lightblue;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px 40px;
+    border-radius: 10%;
+    font-size: 1.2rem;
+}
+
+#attackButton {
+    align-self: flex-start;
+}
+
+footer {
+    margin-top: auto;
+    margin-bottom: 20px;
+}
+
+.log {
+    padding: 20px;
+    align-self: flex-start;
+}
