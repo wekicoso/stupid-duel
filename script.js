@@ -4,6 +4,7 @@ const player = {
     currentHP: 50,
     alive: true,
     critChance: 20,
+    numberOfPotions: 2,
 }
 
 const enemy = {
@@ -18,6 +19,7 @@ let moveNumber = 1;
 
 const playerHealthBar = document.querySelector("#playerHealthBar");
 const playerHPstatus = document.querySelector("#playerHP");
+const potionBarContainer = document.querySelector(".potionBarContainer");
 const enemyHealthBar = document.querySelector("#enemyHealthBar");
 const enemyHPstatus = document.querySelector("#enemyHP");
 const log = document.querySelector("#log");
@@ -25,10 +27,57 @@ const log = document.querySelector("#log");
 enemyHPstatus.textContent = `${enemy.currentHP} / ${enemy.maxHP}`
 playerHPstatus.textContent = `${player.currentHP} / ${player.maxHP}`;
 
+showPotions();
+
+
+function showPotions() {
+    for (let i = 0; i < player.numberOfPotions; i++) {
+        const newPotion = document.createElement("img");
+        newPotion.setAttribute('src', 'img/potion.png');
+        newPotion.setAttribute('alt', 'potion');
+
+        newPotion.addEventListener('click', e => {
+            if (player.currentHP === player.maxHP) {
+                return;
+            }
+
+            player.numberOfPotions--;
+
+            const heal = getRandomHeal(1, 2);
+            let actualHeal = 0;
+
+            if (heal > (player.maxHP - player.currentHP)) {
+                actualHeal = player.maxHP - player.currentHP;
+                player.currentHP += actualHeal;
+            } else {
+                actualHeal = heal;
+                player.currentHP += actualHeal;
+            }
+
+            updateCombatLog(`${moveNumber}. ${player.name} has healed for ${actualHeal} hp.`, false, true);
+
+            playerHealthBar.style.setProperty('--width-of-healthbar-', `${Math.floor(player.currentHP / player.maxHP * 100)}%`);
+            playerHPstatus.textContent = `${player.currentHP} / ${player.maxHP}`;
+
+            const enemyAttackDamage = getRandomDmg(5, 8);
+            enemyAttack(enemyAttackDamage)
+
+            if (!player.alive) {
+                btnAttack.disabled = true;
+                return;
+            }
+
+            e.target.remove();
+        });
+
+        potionBarContainer.appendChild(newPotion);
+    }
+}
+
 const btnAttack = document.querySelector("#attackButton");
 btnAttack.addEventListener('click', e => {
-    const playerAttackDamage = getRandomDmg(2, 5);
-    const enemyAttackDamage = getRandomDmg(2, 5);
+    const playerAttackDamage = getRandomDmg(5, 8);
+    const enemyAttackDamage = getRandomDmg(6, 8);
 
     playerAttack(playerAttackDamage);
 
@@ -54,6 +103,10 @@ function getRandomDmg(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+function getRandomHeal(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
 function isAlive(hp) {
     return hp > 0;
 }
@@ -64,6 +117,9 @@ function resetGame() {
     enemy.currentHP = enemy.maxHP;
     player.alive = true;
     enemy.alive = true;
+    player.numberOfPotions = 2;
+    potionBarContainer.innerHTML = "";
+    showPotions();
     enemyHealthBar.style.setProperty('--width-of-healthbar-', '100%');
     playerHealthBar.style.setProperty('--width-of-healthbar-', '100%');
     const text = document.querySelectorAll("#log p");
@@ -133,12 +189,15 @@ function playerAttack(dmg) {
     updateCombatLog(outputMessage, doCrit);
 }
 
-function updateCombatLog(text, isCrit) {
+function updateCombatLog(text, isCrit = false, hasHealed = false) {
     const newLog = document.createElement("p");
     newLog.textContent = text;
     if (isCrit) {
         newLog.style.setProperty('color', 'red');
+    } else if (hasHealed) {
+        newLog.style.setProperty('color', 'green');
     }
+
     log.appendChild(newLog);
 }
 
