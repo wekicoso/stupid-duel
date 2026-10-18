@@ -5,6 +5,7 @@ html {
     font-size: 1rem;
     background-color: black;
     color: white;
+    --width-of-healthbar-: 100%;
 }
 
 body {
@@ -12,7 +13,6 @@ body {
     height: 100vh;
     display: flex;
     justify-self: center;
-    border: 1px solid white;
 }
 
 h1 {
@@ -64,7 +64,7 @@ img {
 }
 
 .healthbar {
-    width: 100%;
+    width: var(--width-of-healthbar-);
     background-color: white;
     color: lightblue;
 }

@@ -1,12 +1,20 @@
-let logNumber = 1;
+const player = {
+    name: "Player",
+    maxHP: 50,
+    currentHP: 50,
+    alive: true,
+    critChance: 20,
+}
 
-const playerMaxHP = 30;
-let playerCurrentHP = 30;
-let playerAlive = true;
+const enemy = {
+    name: "Stupid",
+    maxHP: 50,
+    currentHP: 50,
+    alive: true,
+    critChance: 20,
+}
 
-const enemyMaxHP = 30;
-let enemyCurrentHP = 30;
-let enemyAlive = true;
+let moveNumber = 1;
 
 const playerHealthBar = document.querySelector("#playerHealthBar");
 const playerHPstatus = document.querySelector("#playerHP");
@@ -14,28 +22,31 @@ const enemyHealthBar = document.querySelector("#enemyHealthBar");
 const enemyHPstatus = document.querySelector("#enemyHP");
 const log = document.querySelector("#log");
 
+enemyHPstatus.textContent = `${enemy.currentHP} / ${enemy.maxHP}`
+playerHPstatus.textContent = `${player.currentHP} / ${player.maxHP}`;
+
 const btnAttack = document.querySelector("#attackButton");
 btnAttack.addEventListener('click', e => {
-    const playerAttackDamage = getRandomDmg(4, 8);
-    const enemyAttackDamage = getRandomDmg(3, 7);
+    const playerAttackDamage = getRandomDmg(2, 5);
+    const enemyAttackDamage = getRandomDmg(2, 5);
 
     playerAttack(playerAttackDamage);
 
-    if (!enemyAlive) {
+    if (!enemy.alive) {
         btnAttack.disabled = true;
         return;
     }
 
     enemyAttack(enemyAttackDamage);
 
-    if (!playerAlive) {
+    if (!player.alive) {
         btnAttack.disabled = true;
         return;
     }
 });
 
-const startNewGame = document.querySelector("#startNewGame");
-startNewGame.addEventListener('click', e => {
+const btnStartNewGame = document.querySelector("#startNewGame");
+btnStartNewGame.addEventListener('click', e => {
     resetGame();
 });
 
@@ -48,64 +59,89 @@ function isAlive(hp) {
 }
 
 function resetGame() {
-    logNumber = 1;
-    playerCurrentHP = 30;
-    enemyCurrentHP = 30;
-    playerAlive = true;
-    enemyAlive = true;
-    enemyHealthBar.style.width = `100%`;
-    playerHealthBar.style.width = `100%`;
+    moveNumber = 1;
+    player.currentHP = player.maxHP;
+    enemy.currentHP = enemy.maxHP;
+    player.alive = true;
+    enemy.alive = true;
+    enemyHealthBar.style.setProperty('--width-of-healthbar-', '100%');
+    playerHealthBar.style.setProperty('--width-of-healthbar-', '100%');
     const text = document.querySelectorAll("#log p");
     text.forEach((p) => {
         p.remove();
     })
     btnAttack.disabled = false;
-    enemyHPstatus.textContent = `${enemyCurrentHP} / ${enemyMaxHP}`
-    playerHPstatus.textContent = `${playerCurrentHP} / ${playerMaxHP}`;
+    enemyHPstatus.textContent = `${enemy.currentHP} / ${enemy.maxHP}`
+    playerHPstatus.textContent = `${player.currentHP} / ${player.maxHP}`;
 }
 
 function enemyAttack(dmg) {
     let outputMessage = "";
+    const doCrit = isCriticalHit(enemy.critChance);
 
-    playerCurrentHP -= dmg;
-
-    if (isAlive(playerCurrentHP)) {
-        playerHealthBar.style.width = `${Math.floor(playerCurrentHP / playerMaxHP * 100)}%`;
-        outputMessage = `${logNumber}. Enemy have dealt ${dmg} damage to you.`;
-    } else {
-        outputMessage = `${logNumber}. You are dead. Enemy WIN!.`
-        playerAlive = false;
-        playerCurrentHP = 0;
-        playerHealthBar.style.width = `0%`;
+    if (doCrit) {
+        dmg *= 2;
     }
 
-    updateCombatLog(outputMessage);
-    playerHPstatus.textContent = `${playerCurrentHP} / ${playerMaxHP}`;
-    logNumber++;
+    player.currentHP -= dmg;
+
+    if (isAlive(player.currentHP)) {
+        playerHealthBar.style.setProperty('--width-of-healthbar-', `${Math.floor(player.currentHP / player.maxHP * 100)}%`);
+        if (doCrit) {
+            outputMessage = `-- ${enemy.name} have dealt CRITICAL ${dmg} damage to ${player.name}.`;
+        } else {
+            outputMessage = `-- ${enemy.name} have dealt ${dmg} damage to ${player.name}.`;
+        }
+    } else {
+        outputMessage = `-- ${player.name} is dead. Enemy WIN!`
+        player.alive = false;
+        player.currentHP = 0;
+        playerHealthBar.style.setProperty('--width-of-healthbar-', `0%`);
+    }
+
+    moveNumber++;
+
+    updateCombatLog(outputMessage, doCrit);
+    playerHPstatus.textContent = `${player.currentHP} / ${player.maxHP}`;
 }
 
 function playerAttack(dmg) {
     let outputMessage = "";
+    const doCrit = isCriticalHit(player.critChance);
 
-    enemyCurrentHP -= dmg;
-
-    if (isAlive(enemyCurrentHP)) {
-        enemyHealthBar.style.width = `${Math.floor(enemyCurrentHP / enemyMaxHP * 100)}%`;
-        outputMessage = `${logNumber}. You have dealt ${dmg} damage to the enemy.`;
-    } else {
-        outputMessage = `${logNumber}. Enemy is dead. You WIN!`
-        enemyAlive = false;
-        enemyCurrentHP = 0;
-        enemyHealthBar.style.width = `0%`;
+    if (doCrit) {
+        dmg *= 2;
     }
 
-    enemyHPstatus.textContent = `${enemyCurrentHP} / ${enemyMaxHP}`;
-    updateCombatLog(outputMessage);
-    logNumber++;
+    enemy.currentHP -= dmg;
+
+    if (isAlive(enemy.currentHP)) {
+        enemyHealthBar.style.setProperty('--width-of-healthbar-', `${Math.floor(enemy.currentHP / enemy.maxHP * 100)}%`);
+        if (doCrit) {
+            outputMessage = `${moveNumber}. ${player.name} have dealt CRITICAL ${dmg} damage to the ${enemy.name}.`;
+        } else {
+            outputMessage = `${moveNumber}. ${player.name} have dealt ${dmg} damage to the ${enemy.name}.`;
+        }
+    } else {
+        outputMessage = `${moveNumber}. ${enemy.name} is dead. ${player.name} WIN!`
+        enemy.alive = false;
+        enemy.currentHP = 0;
+        enemyHealthBar.style.setProperty('--width-of-healthbar-', `0%`);
+    }
+
+    enemyHPstatus.textContent = `${enemy.currentHP} / ${enemy.maxHP}`;
+    updateCombatLog(outputMessage, doCrit);
 }
 
-function updateCombatLog(text) {
+function updateCombatLog(text, isCrit) {
     const newLog = document.createElement("p");
     newLog.textContent = text;
+    if (isCrit) {
+        newLog.style.setProperty('color', 'red');
+    }
     log.appendChild(newLog);
+}
+
+function isCriticalHit(criticalPercentage) {
+    return Math.floor(Math.random() * 100) + 1 <= criticalPercentage;
 }
